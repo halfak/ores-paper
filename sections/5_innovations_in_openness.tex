@@ -131,14 +131,15 @@ When we first started developing ORES, we realized that interpreting the likelih
 
 By finding the threshold of prediction likelihood that optimizes the filter-rate at a high level of recall, we can provide vandal-fighters with an effective trade-off for supporting their work.  We refer to these optimizations in ORES as \emph{threshold optimizations} and ORES provides information about these thresholds in a machine-readable format so that tools can automatically detect the relevant thresholds for their wiki/model context.
 
-Originally, when we developed ORES, we defined these threshold optimizations in our deployment configuration.  But eventually, it became apparent that our users wanted to be able to search through fitness metrics to adapt their own optimizations.  Adding new optimizations and redeploying quickly became a burden on us and a delay for our users.  So we developed a syntax for requesting an optimization from ORES in realtime using fitness statistics from the models tests. E.g. "maximum recall @ precision >= 0.9" gets a useful threshold for a counter-vandalism bot or \texttt{maximum filter\_rate @ recall >= 0.75} gets a useful threshold for semi-automated edit review (with human judgement).
+Originally, when we developed ORES, we defined these threshold optimizations in our deployment configuration.  But eventually, it became apparent that our users wanted to be able to search through fitness metrics to adapt their own optimizations.  Adding new optimizations and redeploying quickly became a burden on us and a delay for our users.  So we developed a syntax for requesting an optimization from ORES in realtime using fitness statistics from the models tests. E.g. \texttt{maximum recall @ precision >= 0.9} gets a useful threshold for a counter-vandalism bot or \texttt{maximum filter\_rate @ recall >= 0.75} gets a useful threshold for semi-automated edit review (with human judgement).
 
 \begin{figure}[htbp]
         \makebox{\hrulefill}{
         \small
         \begin{verbatim}
   {"threshold": 0.299, ...,
-   "filter_rate": 0.88, "fpr": 0.097, "match_rate": 0.12, "precision": 0.215, "recall": 0.751}
+   "filter_rate": 0.88, "fpr": 0.097, "match_rate": 0.12,
+   "precision": 0.215, "recall": 0.751}
         \end{verbatim}
         \hrule
         \normalsize}
@@ -221,4 +222,4 @@ If this edit were saved by an anonymous editor, ORES would still conclude that t
 
 This is a very powerful tool for interrogating ORES.  Imagine being able to ask a law enforcement officer if they feel like they have probable cause for a search and then asking again how their answer would change if the suspect were black.
 
-Interrogability isn't only useful for checking to see where ORES biases originate and what effects they have on predictions.  Some of our users have started using our article quality prediction models (\emph{wp10}) as a method for suggesting work to new editors\footnote{\url{https://dashboard-testing.wikiedu.org}}.  By asking ORES to score a student's draft and then asking ORES to reconsider the predicted quality level of the article with \emph{one more header}, \emph{one more image} , or \emph{one more citation}, they've built an intelligent user interface that can automatically recommend the most productive development to the article -- the change that will most likely bring it to a higher quality level.
+Interrogability isn't only useful for checking to see where ORES biases originate and what effects they have on predictions.  For example, Ross has started using our article quality prediction models (\emph{wp10}) as a method for suggesting work to new editors\footnote{\url{https://dashboard-testing.wikiedu.org}}.  By asking ORES to score a student's draft and then asking ORES to reconsider the predicted quality level of the article with \emph{one more header}, \emph{one more image} , or \emph{one more citation}, they've built an intelligent user interface that can automatically recommend the most productive development to the article -- the change that will most likely bring it to a higher quality level.
