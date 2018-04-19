@@ -16,7 +16,6 @@ figures/*.pdf
 *.cb2
 *.ins
 *.dtx
-*.cls
 *.bbx
 *.cbx
 *.dbx
