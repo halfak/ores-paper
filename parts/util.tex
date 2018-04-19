@@ -1,0 +1,89 @@
+\usepackage[ruled]{algorithm2e} % For algorithms
+\renewcommand{\algorithmcfname}{ALGORITHM}
+\SetAlFnt{\small}
+\SetAlCapFnt{\small}
+\SetAlCapNameFnt{\small}
+\SetAlCapHSkip{0pt}
+\IncMargin{-\parindent}
+% Arabic page numbers for submission.  Remove this line to eliminate
+% page numbers for the camera ready copy
+% \pagenumbering{arabic}
+
+% Load basic packages
+\usepackage{balance}       % to better equalize the last page
+\usepackage{graphics}      % for EPS, load graphicx instead
+%\usepackage[T1]{fontenc}   % for umlauts and other diaeresis
+%\usepackage{txfonts}
+%\usepackage{mathptmx}
+%\usepackage[pdflang={en-US},pdftex]{hyperref}
+%\usepackage{color}
+\usepackage{booktabs}
+\usepackage{subcaption}
+\usepackage{textcomp}
+\PassOptionsToPackage{warn}{textcomp}
+%\usepackage[table]{xcolor}
+
+% Some optional stuff you might like/need.
+\usepackage{microtype}        % Improved Tracking and Kerning
+% \usepackage[all]{hypcap}    % Fixes bug in hyperref caption linking
+% \usepackage{ccicons}          % Cite your images correctly!
+% \usepackage[utf8]{inputenc} % for a UTF8 editor only
+
+% If you want to use todo notes, marginpars etc. during creation of
+% your draft document, you have to enable the "chi_draft" option for
+% the document class. To do this, change the very first line to:
+% "\documentclass[chi_draft]{sigchi}". You can then place todo notes
+% by using the "\todo{...}"  command. Make sure to disable the draft
+% option again before submitting your final document.
+%\usepackage{todonotes}
+
+% Paper metadata (use plain text, for PDF inclusion and later
+% re-using, if desired).  Use \emtpyauthor when submitting for review
+% so you remain anonymous.
+
+
+\newcommand{\FIXME}[1]{[\textbf{FIXME}: \textit{#1}]}
+
+\newcommand\leadin[1]{%
+    \vskip 5pt \noindent\textbf{#1} %
+}
+\newcommand\leadinx[1]{%
+    \vskip 5pt \noindent\textbf{#1} %
+}
+
+%
+%\def\sharedaffiliation{%
+%\end{tabular}
+%\begin{tabular}{c}}
+%
+
+\clubpenalty=10000
+\widowpenalty=10000
+
+% llt: Define a global style for URLs, rather that the default one
+%\makeatletter
+%\def\url@leostyle{%
+%  \@ifundefined{selectfont}{
+%    \def\UrlFont{\sf}
+%  }{
+%    \def\UrlFont{\small\bf\ttfamily}
+%  }}
+%\makeatother
+%\urlstyle{leo}
+
+% To make various LaTeX processors do the right thing with page size.
+%\def\pprw{8.5in}
+%\def\pprh{11in}
+%\special{papersize=\pprw,\pprh}
+%\setlength{\paperwidth}{\pprw}
+%\setlength{\paperheight}{\pprh}
+%\setlength{\pdfpagewidth}{\pprw}
+%\setlength{\pdfpageheight}{\pprh}
+
+% Make sure hyperref comes last of your loaded packages, to give it a
+% fighting chance of not being over-written, since its job is to
+% redefine many LaTeX commands.
+% \definecolor{linkColor}{RGB}{6,125,233}
+
+% create a shortcut to typeset table headings
+% \newcommand\tabhead[1]{\small\textbf{#1}}
