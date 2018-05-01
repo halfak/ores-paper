@@ -782,8 +782,8 @@ Computing Machinery]
 \let\enddescription=\endlist % for efficiency
 \define@choicekey*+{ACM}{acmJournal}[\@journalCode\@journalCode@nr]{%
   CIE,%
-  CSUR,%
   CSCW,%
+  CSUR,%
   DTRAP,%
   IMWUT,%
   JACM,%
@@ -844,6 +844,10 @@ Computing Machinery]
   \def\@journalName{ACM Computers in Entertainment}%
   \def\@journalNameShort{ACM Comput. Entertain.}%
   \def\@permissionCodeOne{1544-3574}%
+\or % CSCW
+  \def\@journalName{Computer Supported Cooperative work}%
+  \def\@journalNameShort{ACM CSCW}%
+  \def\@permissionCodeOne{0360-0300}%
 \or % CSUR
   \def\@journalName{ACM Computing Surveys}%
   \def\@journalNameShort{ACM Comput. Surv.}%
@@ -1346,7 +1350,7 @@ Computing Machinery]
     acmcopyright,acmlicensed,rightsretained,%
     usgov,usgovmixed,cagov,cagovmixed,licensedusgovmixed,%
     licensedcagov,licensedcagovmixed,othergov,licensedothergov,%
-    iw3c2w3,iw3c2w3g}{%
+    iw3c2w3,iw3c2w3g,ccbysa}{%
   \@printpermissiontrue
   \@printcopyrighttrue
   \@acmownedtrue
@@ -1393,6 +1397,10 @@ Computing Machinery]
   \ifnum\acm@copyrightmode=14\relax % iw3c2w3g
    \@acmownedfalse
    \AtBeginDocument{\acmPrice{}}%
+  \fi
+  \ifnum\acm@copyrightmode=15\relax % ccbysa
+   \@acmownedfalse
+   \AtBeginDocument{\acmPrice{}}%
   \fi}
 \def\setcopyright#1{\setkeys{ACM@}{acmcopyrightmode=#1}}
 \setcopyright{acmcopyright}
@@ -1432,6 +1440,9 @@ Computing Machinery]
   \or % ic2w3wwwgoogle
   IW3C2 (International World Wide Web Conference Committee), published
   under Creative Commons CC-BY-NC-ND~4.0 License.
+  \or % ccbysa
+  Copyright held by the owner/author(s). Publication rights licensed to
+  ACM\@.
   \fi}
 \def\@formatdoi#1{\url{https://doi.org/#1}}
 \def\@copyrightpermission{%
@@ -1556,6 +1567,12 @@ Computing Machinery]
    (CC-BY-NC-ND~4.0) license. Authors reserve their rights to
    disseminate the work on their personal and corporate Web sites with
    the appropriate attribution.
+ \or % ccbysa
+   This paper is published under the Creative Commons Attribution Share-alike~4.0
+   International (CC-BY-SA~4.0) license.  Anyone is free to distribute and re-use 
+   this work on the conditions that the original authors are appropriately credited 
+   and that any derivative work is made available under the same, similar, or a 
+   compatible license.
  \fi}
 \def\copyrightyear#1{\def\@copyrightyear{#1}}
 \copyrightyear{\@acmYear}

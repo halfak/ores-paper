@@ -32,8 +32,12 @@ sections = \
 
 
 halfaker2018ores.pdf: halfaker2018ores.tex \
-		$(figures) $(parts) $(sections) refs.bib
+		$(figures) $(parts) $(sections) refs.bib acmart.cls
 	rubber --pdf halfaker2018ores.tex
+
+anon2018ores.pdf: anon2018ores.tex \
+		$(figures) $(parts) $(sections) refs.bib acmart.cls
+	rubber --pdf anon2018ores.tex
 
 halfaker2018ores.with_font.pdf: halfaker2018ores.pdf
 	ps2pdf13 -dPDFSETTINGS=/prepress halfaker2018ores.pdf halfaker2018ores.with_fonts.pdf
