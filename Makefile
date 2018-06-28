@@ -2,6 +2,7 @@ figures = \
 		figures/edit_review_filters_screenshot.tex \
 		figures/ores_architecture.tex \
 		figures/ores_activity.tex \
+		figures/ores_data_user.tex \
 		figures/prediction_error_for_anons_and_newcomers.tex \
 		figures/wikilabels_screenshot.tex \
 		figures/ORES_precache_request_rate_201804.png \
@@ -10,7 +11,8 @@ figures = \
 		figures/anon_damaging_gb_vs_svc.pdf \
 		figures/natural_damaging_gb_vs_svc.pdf \
 		figures/newcomer_damaging_gb_vs_svc.pdf \
-		figures/ORES_architecture.pdf
+		figures/ORES_architecture.pdf \
+		figures/ores_data_user_diagram.pdf
 
 parts = \
 		parts/abstract.tex \
@@ -53,3 +55,6 @@ figures/newcomer_damaging_gb_vs_svc.pdf: figures/newcomer_damaging_gb_vs_svc.svg
 
 figures/ORES_architecture.pdf: figures/ORES_architecture.svg
 	rsvg-convert -f pdf -o figures/ORES_architecture.pdf figures/ORES_architecture.svg
+
+figures/ores_data_user_diagram.pdf: figures/ores_data_user_diagram.svg
+	rsvg-convert -f pdf -o figures/ores_data_user_diagram.pdf figures/ores_data_user_diagram.svg
