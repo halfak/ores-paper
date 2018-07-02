@@ -1,0 +1,42 @@
+\subsection{Explicit pipelines}
+We have designed the process of training and deploying ORES prediction models is to be repeatable and reviewable.  Consider the following code that represents a common pattern from our model-building Makefiles:
+\begin{figure}[htbp]
+        \makebox{\hrulefill}{
+        \small
+        \begin{verbatim}
+datasets/enwiki.human_labeled_revisions.20k_2015.json:
+        ./utility fetch_labels \
+                https://labels.wmflabs.org/campaigns/enwiki/4/ > $@
+
+datasets/enwiki.labeled_revisions.w_cache.20k_2015.json: \
+                datasets/enwiki.labeled_revisions.20k_2015.json
+        cat $< | \
+        revscoring extract \
+                editquality.feature_lists.enwiki.damaging \
+                --host https://en.wikipedia.org \
+                --extractor $(max_extractors) \
+                --verbose > $@
+
+models/enwiki.damaging.gradient_boosting.model: \
+                datasets/enwiki.labeled_revisions.w_cache.20k_2015.json
+        cat $^ | \
+        revscoring cv_train \
+                revscoring.scoring.models.GradientBoosting \
+                editquality.feature_lists.enwiki.damaging \
+                damaging \
+                --version=$(damaging_major_minor).0 \
+                (... model parameters ...)
+                --center --scale > $@
+        \end{verbatim}
+        \hrule
+        \normalsize}
+        \caption{Makefile rules for the English damage detection model from \url{https://github.com/wiki-ai/editquality}}
+        \label{fig:english_damaging_makefile}
+\end{figure}
+
+
+Essentially, this code helps someone determine where the labeled data comes from (manually labeled via the Wiki Labels system).  It makes it clear how features are extracted (using the \texttt{revscoring extract} utility and the \texttt{feature_lists.enwiki.damaging} feature set).  Finally, this dataset of extracted features is used to cross-validate and train a model predicting the ``damaging'' label and a serialized version of that model is written to a file.  A user could clone this repository, install the set of requirements, and run \texttt{make enwiki\_models} and expect that all of the data-pipeline would be reproduced, and an exactly equivalent model obtained.
+
+By explicitly using public resources and releasing our utilities and Makefile source code under an open license (MIT), we have essential implemented a turn-key process for replicating our model building and evaluation pipeline.  A developer can review this pipeline for issues knowing that they are not missing a step of the process because all steps are captured in the Makefile.  They can also build on the process (e.g. add new features) incrementally and restart the pipeline.  In our own experience, this explicit pipeline is extremely useful for identifying the origin of our own model building bugs and for making incremental improvements to ORES' models.
+
+At the very base of our Makefile, a user can run \texttt{make models} to rebuild all of the models of a certain type.  We regularly perform this process ourselves to ensure that the Makefile is an accurate representation of the data flow pipeline.  Performing complete rebuild is essential when a breaking change is made to one of our libraries.  The resulting serialized models are saved to the source code repository so that a developer can review the history of any specific model and even experiment with generating scores using old model versions.

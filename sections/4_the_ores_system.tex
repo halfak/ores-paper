@@ -11,14 +11,14 @@ To be useful for Wikipedians and tool developers, ORES uses distributed computat
 
 This horizontal scaleability is achieved in two ways: input-output (IO) workers (uwsgi\footnote{\url{https://uwsgi-docs.readthedocs.io/}}) and the computation (CPU) workers (celery\footnote{\url{http://www.celeryproject.org/}}).  Requests are split across available IO workers, and all necessary data is gathered using external APIs (e.g. the MediaWiki API\footnote{\url{http://enwp.org/:mw:MW:API}}).  The data is then split into a job queue managed by \emph{celery} for the CPU-intensive work.  This efficiently uses available resources and can dynamically scale, adding and removing new IO and CPU workers in multiple datacenters as needed.  This is also fault-tolerant, as servers can fail without failing the service as a whole.
 
-\subsection{Single score processing}
+\subsection{Real-time processing}
 The most common use case of ORES is real-time processing of edits.  For example, those using counter-vandalism tools like Huggle monitor edits within seconds of when they are made.  It is critical that ORES return these requests return in a timely manner.  We implement several strategies to optimize this request pattern.
 
-\leadin{Single score speed.}
+\leadin{Single score speed}
 In the worst case scenario, ORES is generating a score from scratch.  This is the common case when a score is requested in real-time---which invariably occurs right after the target edit or article is saved.  We work to ensure that the median score duration is around 1 second.  Our metrics tracking currently suggests that for the week April 6-13th, our median, 75\%, and 95\% score response timings are 1.1, 1.2, and 1.9 seconds respectively.
 
-\leadin{Caching and Precaching.}
-In order to take advantage of our users' overlapping interests in scoring recent activity, we also maintain a basic least-recently-used (LRU) cache\footnote{Implemented natively by Redis, \url{https://redis.io}} using a deterministic score naming scheme (e.g. enwiki:123456:damaging would represent a score needed for the English Wikipedia damaging model for the edit identified by 123456).  This allows requests for scores that have recently been generated to be returned within about 50ms via HTTPS.  In other words, a request for a recent edit that had previously been scored is 20X faster due to this cache.
+\leadin{Caching and precaching}
+In order to take advantage of our users' overlapping interests in scoring recent activity, we also maintain a basic least-recently-used (LRU) cache\footnote{Implemented natively by Redis, \url{https://redis.io}} using a deterministic score naming scheme (e.g. \texttt{enwiki:123456:damaging} would represent a score needed for the English Wikipedia damaging model for the edit identified by 123456).  This allows requests for scores that have recently been generated to be returned within about 50ms via HTTPS.  In other words, a request for a recent edit that had previously been scored is 20X faster due to this cache.
 
 In order to make sure that scores for \emph{all recent edits} are available in the cache for real-time use cases, we implement a ``precaching'' strategy that listens to a high-speed stream of recent activity in Wikipedia and automatically requests scores for a specific subset of actions (e.g. edits).  With our LRU and pre-caching strategy, we attain a cache hit rate of about 80\% consistently.
 
