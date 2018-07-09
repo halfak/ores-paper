@@ -1,4 +1,75 @@
-\subsection{Explicit pipelines}
+\subsection{ORES system details}
+In this section, we describe some of the details of the ORES system.
+
+\subsubsection{Score documents}
+\label{sec:appendix.score_documents}
+The predictions made by through ORES are human- and machine-readable.  In general, our classifiers will report a specific prediction along with a set of probability (likelihood) for each class.  By providing detailed information about a prediction, we allow users to re-purpose the prediction for their on use.  Consider article quality (wp10) prediction output in Figure~\ref{fig:english_damaging_model_info}.
+
+\begin{figure}[htbp]
+        \makebox{\hrulefill}{
+        \small
+        \begin{verbatim}
+        "wp10": {
+          "score": {
+            "prediction": "Start",
+            "probability": {
+              "FA": 0.0032931301528326693, "GA": 0.005852955431273448,
+              "B": 0.060623380484537165, "C": 0.01991363271632328,
+              "Start": 0.7543301344435299, "Stub": 0.15598676677150375
+            }
+          }
+        }
+        \end{verbatim}
+        \hrule
+        \normalsize}
+        \caption{Result of \url{https://ores.wikimedia.org/v3/scores/enwiki/34234210/wp10}}
+        \label{fig:english_damaging_model_info}
+\end{figure}
+
+A developer making use of a prediction like this may choose to present the raw prediction ``Start'' (one of the lower quality classes) to users or to implement some visualization of the probability distribution across predicted classed (75\% Start, 16\% Stub, etc.).  They might even choose to build an aggregate metric that weights the quality classes by their prediction weight (e.g. Ross's student support interface\cite{ross2016visualizing} or the \emph{weighted sum} metric from \cite{halfaker2017interpolating}).
+
+\subsubsection{Model information}
+\label{sec:appendix.model_information}
+In order to use a model effectively in practice, a user needs to know what to expect from model performance.  E.g. how often is it that when an edit is predicted to be ``damaging'' it actually is? (\emph{precision}) or what proportion of damaging edits should I expect will be caught by the model? (\emph{recall})  The target metric of an operational concern depends strongly on the intended use of the model.  Given that our goal with ORES is to allow people to experiment with the use and reflection of prediction models in novel ways, we sought to build an general model information strategy.
+
+\begin{figure}[htbp]
+        \makebox{\hrulefill}{
+        \small
+        \begin{verbatim}
+      "damaging": {
+        "type": "GradientBoosting",
+        "version": "0.4.0",
+        "environment": {"machine": "x86_64", ...},
+        "params": {center": true, "init": null, "label_weights": {"true": 10},
+                   "labels": [true, false], "learning_rate": 0.01, "min_samples_leaf": 1,
+                   ...},
+        "statistics": {
+          "counts": {"labels": {"false": 18702, "true": 743},
+                     "n": 19445,
+                     "predictions": {"false": {"false": 17989, "true": 713},
+                                     "true": {"false": 331, "true": 412}}},
+          "precision": {"labels": {"false": 0.984, "true": 0.34},
+                        "macro": 0.662, "micro": 0.962},
+          "recall": {"labels": {"false": 0.962, "true": 0.555},
+                     "macro": 0.758, "micro": 0.948},
+          "pr_auc": {"labels": {"false": 0.997, "true": 0.445},
+                     "macro": 0.721, "micro": 0.978},
+          "roc_auc": {"labels": {"false": 0.923, "true": 0.923},
+                      "macro": 0.923, "micro": 0.923},
+          ...
+        }
+      }
+        \end{verbatim}
+        \hrule
+        \normalsize}
+        \caption{Result of \url{https://ores.wikimedia.org/v3/scores/enwiki/?model_info&models=damaging}}
+        \label{fig:english_damaging_model_info}
+\end{figure}
+
+The output captured in Figure~\ref{fig:english_damaging_model_info} shows a heavily trimmed JSON (human- and machine-readable) output of \emph{model\_info} for the ``damaging'' model in English Wikipedia.  Note that many fields have been trimmed in the interest of space with an ellipsis (``...'').  What remains gives a taste of what information is available.  Specifically, there is structured data about what kind of model is being used, how it is parameterized, the computing environment used for training, the size of the train/test set, the basic set of fitness metrics, and a version number so that secondary caches know when to invalidate old scores.  A developer using an ORES model in their tools can use these fitness metrics to make decisions about whether or not a model is appropriate and to report to users what fitness they might expect at a given confidence threshold.
+
+\subsubsection{Explicit pipelines}
+\label{sec:appendix.explicit_pipelines}
 We have designed the process of training and deploying ORES prediction models is to be repeatable and reviewable.  Consider the following code that represents a common pattern from our model-building Makefiles:
 \begin{figure}[htbp]
         \makebox{\hrulefill}{
@@ -35,7 +106,7 @@ models/enwiki.damaging.gradient_boosting.model: \
 \end{figure}
 
 
-Essentially, this code helps someone determine where the labeled data comes from (manually labeled via the Wiki Labels system).  It makes it clear how features are extracted (using the \texttt{revscoring extract} utility and the \texttt{feature_lists.enwiki.damaging} feature set).  Finally, this dataset of extracted features is used to cross-validate and train a model predicting the ``damaging'' label and a serialized version of that model is written to a file.  A user could clone this repository, install the set of requirements, and run \texttt{make enwiki\_models} and expect that all of the data-pipeline would be reproduced, and an exactly equivalent model obtained.
+Essentially, this code helps someone determine where the labeled data comes from (manually labeled via the Wiki Labels system).  It makes it clear how features are extracted (using the \texttt{revscoring extract} utility and the \texttt{feature\_lists.enwiki.damaging} feature set).  Finally, this dataset of extracted features is used to cross-validate and train a model predicting the ``damaging'' label and a serialized version of that model is written to a file.  A user could clone this repository, install the set of requirements, and run \texttt{make enwiki\_models} and expect that all of the data-pipeline would be reproduced, and an exactly equivalent model obtained.
 
 By explicitly using public resources and releasing our utilities and Makefile source code under an open license (MIT), we have essential implemented a turn-key process for replicating our model building and evaluation pipeline.  A developer can review this pipeline for issues knowing that they are not missing a step of the process because all steps are captured in the Makefile.  They can also build on the process (e.g. add new features) incrementally and restart the pipeline.  In our own experience, this explicit pipeline is extremely useful for identifying the origin of our own model building bugs and for making incremental improvements to ORES' models.
 

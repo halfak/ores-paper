@@ -1,4 +1,4 @@
-Our goals in the development of ORES and the deployment of models is to keep the process---the flow of data from random samples through model training and evaluation---open for review, critique, and iteration.  In this section, we'll describe how we implemented transparent reproducibility in our model development process, and how ORES outputs a wealth of useful and nuanced information for users.  By making this detailed information available to users and developers, we hope to enable flexibility and power in the evaluation and use of ORES predictions for novel purposes.
+Our goals in the development of ORES and the deployment of models is to keep the process---the flow of data from random samples through model training and evaluation---open for review, critique, and iteration.  In this section, we'll describe how we implemented transparent reproducibility in our model development process, and how ORES outputs a wealth of useful and nuanced information for users.  By making this detailed information available to users and developers, we hope to enable flexibility and power in the evaluation and use of ORES predictions for novel purposes.  In this section, we describe some of the key, novel innovations that have made ORES fit Wikipedian concerns and be flexible to re-use.  The appendix also contains information about ORES' detailed prediction output (section~\ref{sec:appendix.score_documents}), how users and tools can adjust their use to model fitness (section~\ref{sec:appendix.model_information}, and how the whole model development workflow is made inspectable and replicable (section~\ref{sec:appendix.explicit_pipelines}).
 
 \subsection{Collaboratively labeled data}
 There are two primary strategies for gathering labeled data for ORES' models: found traces and manual labels.
@@ -15,79 +15,12 @@ We hold manual labeling as the gold standard for purposes of training a model to
 
 For example, to supplement our models of edit quality, we replace the models based on found ``reverted\_for\_damage'' traces with manual judgments where we specifically ask labelers to distinguish ``damaging''/good from ``good-faith''/vandalism.  Using these labels we can build two separate models which allow users to filter for edits that are likely to be good-faith mistakes\cite{halfaker2017automated}, to just focus on vandalism, or to apply themselves broadly to all damaging edits.
 
-%We've managed to complete manual labeling campaigns for Turkish and Arabic Wikipedia article quality (wp10) as well as item quality in Wikidata.  We've found that, when working with manually labeled data, we can attain relatively high levels of fitness with 150 observations per quality class.
-
-\subsection{Score documents}
-The predictions made by through ORES are also human- and machine-readable.  In general, our classifiers will report a specific prediction along with a set of probability (likelihood) for each class.  Consider article quality (wp10) prediction output in Figure~\ref{fig:english_damaging_model_info}.
-
-\begin{figure}[htbp]
-        \makebox{\hrulefill}{
-        \small
-        \begin{verbatim}
-        "wp10": {
-          "score": {
-            "prediction": "Start",
-            "probability": {
-              "FA": 0.0032931301528326693, "GA": 0.005852955431273448,
-              "B": 0.060623380484537165, "C": 0.01991363271632328,
-              "Start": 0.7543301344435299, "Stub": 0.15598676677150375
-            }
-          }
-        }
-        \end{verbatim}
-        \hrule
-        \normalsize}
-        \caption{Result of \url{https://ores.wikimedia.org/v3/scores/enwiki/34234210/wp10}}
-        \label{fig:english_damaging_model_info}
-\end{figure}
-
-A developer making use of a prediction like this may choose to present the raw prediction ``Start'' (one of the lower quality classes) to users or to implement some visualization of the probability distribution across predicted classed (75\% Start, 16\% Stub, etc.).  They might even choose to build an aggregate metric that weights the quality classes by their prediction weight (e.g. Ross's student support interface\cite{ross2016visualizing} or the \emph{weighted sum} metric from \cite{halfaker2017interpolating}).
-
-\subsection{Model information}
-In order to use a model effectively in practice, a user needs to know what to expect from model performance.  E.g. how often is it that when an edit is predicted to be ``damaging'' it actually is? (\emph{precision}) or what proportion of damaging edits should I expect will be caught by the model? (\emph{recall})  The target metric of an operational concern depends strongly on the intended use of the model.  Given that our goal with ORES is to allow people to experiment with the use and reflection of prediction models in novel ways, we sought to build an general model information strategy.
-
-\begin{figure}[htbp]
-        \makebox{\hrulefill}{
-        \small
-        \begin{verbatim}
-      "damaging": {
-        "type": "GradientBoosting",
-        "version": "0.4.0",
-        "environment": {"machine": "x86_64", ...},
-        "params": {center": true, "init": null, "label_weights": {"true": 10},
-                   "labels": [true, false], "learning_rate": 0.01, "min_samples_leaf": 1,
-                   ...},
-        "statistics": {
-          "counts": {"labels": {"false": 18702, "true": 743},
-                     "n": 19445,
-                     "predictions": {"false": {"false": 17989, "true": 713},
-                                     "true": {"false": 331, "true": 412}}},
-          "precision": {"labels": {"false": 0.984, "true": 0.34},
-                        "macro": 0.662, "micro": 0.962},
-          "recall": {"labels": {"false": 0.962, "true": 0.555},
-                     "macro": 0.758, "micro": 0.948},
-          "pr_auc": {"labels": {"false": 0.997, "true": 0.445},
-                     "macro": 0.721, "micro": 0.978},
-          "roc_auc": {"labels": {"false": 0.923, "true": 0.923},
-                      "macro": 0.923, "micro": 0.923},
-          ...
-        }
-      }
-        \end{verbatim}
-        \hrule
-        \normalsize}
-        \caption{Result of \url{https://ores.wikimedia.org/v3/scores/enwiki/?model_info&models=damaging}}
-        \label{fig:english_damaging_model_info}
-\end{figure}
-
-The output captured in Figure~\ref{fig:english_damaging_model_info} shows a heavily trimmed JSON (human- and machine-readable) output of \emph{model\_info} for the ``damaging'' model in English Wikipedia.  Note that many fields have been trimmed in the interest of space with an ellipsis (``...'').  What remains gives a taste of what information is available.  Specifically, there is structured data about what kind of model is being used, how it is parameterized, the computing environment used for training, the size of the train/test set, the basic set of fitness metrics, and a version number so that secondary caches know when to invalidate old scores.  A developer using an ORES model in their tools can use these fitness metrics to make decisions about whether or not a model is appropriate and to report to users what fitness they might expect at a given confidence threshold.
-
 \subsection{Threshold optimization}
-When we first started developing ORES, we realized that interpreting the likelihood estimates of our prediction models would be crucial to using the predictions effectively.  Essentially, the operational concerns of Wikipedia's curators need to be translated into a likelihood threshold.  For example, counter-vandalism patrollers seek catch all (or almost all) vandalism before it is allowed to stick in Wikipedia for very long.  That means they have an operational concern around the \emph{recall} of a damage prediction model.  They'd also like to review as few edits as possible in order to catch that vandalism.  So they have an operational concern around the \emph{filter rate}---the proportion of edits that are not flagged for review by the model\cite{halfaker2016notes}.
+When we first started developing ORES, we realized that operational concerns of Wikipedia's curators need to be translated into confidence thresholds for the prediction models.  For example, counter-vandalism patrollers seek catch all (or almost all) vandalism before it is allowed to stick in Wikipedia for very long.  That means they have an operational concern around the \emph{recall} of a damage prediction model.  They'd also like to review as few edits as possible in order to catch that vandalism.  So they have an operational concern around the \emph{filter rate}---the proportion of edits that are not flagged for review by the model\cite{halfaker2016notes}.
 
 By finding the threshold of prediction likelihood that optimizes the filter-rate at a high level of recall, we can provide vandal-fighters with an effective trade-off for supporting their work.  We refer to these optimizations in ORES as \emph{threshold optimizations} and ORES provides information about these thresholds in a machine-readable format so that tools can automatically detect the relevant thresholds for their wiki/model context.
 
-Originally, when we developed ORES, we defined these threshold optimizations in our deployment configuration.  But eventually, it became apparent that our users wanted to be able to search through fitness metrics to adapt their own optimizations.  Adding new optimizations and redeploying quickly became a burden on us and a delay for our users.  So we developed a syntax for requesting an optimization from ORES in realtime using fitness statistics from the models tests. E.g. \texttt{maximum recall @ precision >= 0.9} gets a useful threshold for a counter-vandalism bot or \texttt{maximum filter\_rate @ recall >= 0.75} gets a useful threshold for semi-automated edit review (with human judgement).
+Originally, when we developed ORES, we defined these threshold optimizations in our deployment configuration.  But eventually, it became apparent that our users wanted to be able to search through fitness metrics to choose thresholds that matched their own operational concerns.  Adding new optimizations and redeploying quickly became a burden on us and a delay for our users.  So we developed a syntax for requesting an optimization from ORES in realtime using fitness statistics from the models tests. E.g. \texttt{maximum recall @ precision >= 0.9} gets a useful threshold for a counter-vandalism bot or \texttt{maximum filter\_rate @ recall >= 0.75} gets a useful threshold for semi-automated edit review (with human judgement).
 
 \begin{figure}[htbp]
         \makebox{\hrulefill}{
