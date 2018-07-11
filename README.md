@@ -2,6 +2,7 @@
 
 ## Authors
 * Aaron Halfaker
+* R. Stuart Geiger
 * Jonathan T. Morgan
 * Amir Sarabadani
 * Adam Wight
