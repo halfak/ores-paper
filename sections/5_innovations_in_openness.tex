@@ -11,7 +11,7 @@ However, this ``reverted\_for\_damage'' label is problematic in that many edits 
 \leadin{Manual labeling campaigns with Wiki Labels}
 We hold manual labeling by human Wikipedians as the gold standard for purposes of training a model to replicate human judgement.  By asking Wikipedians to demonstrate their judgement on examples from their own wikis, we can most closely tailor model predictions to match the judgements that make sense to these communities.  This contrasts with found data, which deceptively appears to be a better option because of its apparent completeness: every edit was either reverted or not.  In contrast, manual labeling has a high up-front expense of human labor.  To minimize that cost, we developed a high-speed, collaborative labeling interface called ``Wiki Labels\footnote{\url{http://enwp.org/:m:Wiki labels}}'' to allow Wikipedians to efficiently label large datasets.
 
-For example, to supplement our models of edit quality, we replace the models based on found ``reverted\_for\_damage'' traces with manual judgments where we specifically ask labelers to distinguish ``damaging''/good from ``good-faith''/vandalism. ``Good faith'' is a well-established term in Wikipedian culture, with specific local meanings that are different than their broader colloquial use --- similar to how Wikipedians define ``consensus'' or ``neutrality''.  Using these labels we can build two separate models which allow users to filter for edits that are likely to be good-faith mistakes\cite{halfaker2017automated}, to just focus on vandalism, or to apply themselves broadly to all damaging edits.
+For example, to supplement our models of edit quality, we replace the models based on ``reverted\_for\_damage'' found traces with judgments from a community labeling campaign, where we specifically ask labelers to distinguish ``damaging'' edits from ``good-faith'' edits. ``Good faith'' is a well-established term in Wikipedian culture, with specific local meanings that are different than their broader colloquial use --- similar to how Wikipedians define ``consensus'' or ``neutrality''.  Using these labels we can build two separate models which allow users to filter for edits that are likely to be good-faith mistakes\cite{halfaker2017automated}, to just focus on vandalism, or to apply themselves broadly to all damaging edits.
 
 \subsection{Dependency injection and interrogability}
 One of the key features of ORES that allows scores to be generated in an efficient and flexible way is a dependency injection framework.  We use a dependency solver to determine what data is necessary for a scoring job and eventually compute the features used by a prediction model.
@@ -29,10 +29,7 @@ The flexibility provided by the dependency injection framework lets us implement
       "prediction": false,
       "probability": {
         "false": 0.938910157824447,
-        "true": 0.06108984217555305
-      }
-    }
-  }
+        "true": 0.06108984217555305   }   }  }
   \end{verbatim}
   \hrule
   \normalsize}
@@ -48,10 +45,7 @@ The flexibility provided by the dependency injection framework lets us implement
       "prediction": false,
       "probability": {
         "false": 0.9124151990561908,
-        "true": 0.0875848009438092
-      }
-    }
-  }
+        "true": 0.0875848009438092   }   }   }
   \end{verbatim}
   \hrule
   \normalsize}
