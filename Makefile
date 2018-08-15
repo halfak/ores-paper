@@ -19,7 +19,8 @@ parts = \
 		parts/authors.tex \
 		parts/body.tex \
 		parts/copyright.tex \
-		parts/util.tex
+		parts/util.tex \
+		parts/metadata.tex
 
 sections = \
 		sections/1_introduction.tex \
