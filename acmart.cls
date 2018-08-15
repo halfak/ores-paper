@@ -785,6 +785,7 @@ Computing Machinery]
   CSCW,%
   CSUR,%
   DTRAP,%
+  FAT*,%
   IMWUT,%
   JACM,%
   JDIQ,%
@@ -856,6 +857,10 @@ Computing Machinery]
   \def\@journalName{Digital Threats: Research and Practice}%
   \def\@journalNameShort{Digit. Threat. Res. Pract.}%
   \def\@permissionCodeOne{2576-5337}%
+\or % FAT*
+  \def\@journalName{Fairness, Accountability, and Transparency}%
+  \def\@journalNameShort{ACM FAT*}%
+  \def\@permissionCodeOne{????-????}%
 \or % IMWUT
   \def\@journalName{Proceedings of the ACM on Interactive, Mobile,
     Wearable and Ubiquitous Technologies}%
@@ -1569,9 +1574,9 @@ Computing Machinery]
    the appropriate attribution.
  \or % ccbysa
    This paper is published under the Creative Commons Attribution Share-alike~4.0
-   International (CC-BY-SA~4.0) license.  Anyone is free to distribute and re-use 
-   this work on the conditions that the original authors are appropriately credited 
-   and that any derivative work is made available under the same, similar, or a 
+   International (CC-BY-SA~4.0) license.  Anyone is free to distribute and re-use
+   this work on the conditions that the original authors are appropriately credited
+   and that any derivative work is made available under the same, similar, or a
    compatible license.
  \fi}
 \def\copyrightyear#1{\def\@copyrightyear{#1}}

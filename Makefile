@@ -30,7 +30,8 @@ sections = \
 		sections/6_adoption_patterns.tex \
 		sections/7_case_studies.tex \
 		sections/8_conclusions_and_future_work.tex \
-		sections/9_acknowledgements.tex
+		sections/9_acknowledgements.tex \
+		sections/appendix.tex
 
 
 halfaker2018ores.pdf: halfaker2018ores.tex \
