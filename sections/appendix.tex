@@ -1,6 +1,6 @@
 \subsection{Score documents}
 \label{sec:appendix.score_documents}
-The predictions made by through ORES are human- and machine-readable.  In general, our classifiers will report a specific prediction along with a set of probability (likelihood) for each class.  By providing detailed information about a prediction, we allow users to re-purpose the prediction for their on use.  Consider article quality (wp10) prediction output in Figure~\ref{fig:english_damaging_model_info}.
+The predictions made by ORES are human- and machine-readable.  In general, our classifiers will report a specific prediction along with a set of probability (likelihood) for each class.  By providing detailed information about a prediction, we allow users to re-purpose the prediction for their on use.  Consider article quality (wp10) prediction output in Figure~\ref{fig:english_damaging_model_info}.
 
 \begin{figure}[htbp]
         \makebox{\hrulefill}{
@@ -76,7 +76,7 @@ The output captured in Figure~\ref{fig:english_damaging_model_info} shows a heav
 
 \subsection{Threshold optimization}
 \label{sec:appendix.threshold_optimization}
-When we first started developing ORES, we realized that operational concerns of Wikipedia's curators need to be translated into confidence thresholds for the prediction models.  For example, counter-vandalism patrollers seek to catch all (or almost all) vandalism before it stays in Wikipedia for very long.  That means they have an operational concern around the \emph{recall} of a damage prediction model.  They also like to review as few edits as possible in order to catch that vandalism.  So they have an operational concern around the \emph{filter rate}---the proportion of edits that are not flagged for review by the model\cite{halfaker2016notes}.
+When we first started developing ORES, we realized that operational concerns of Wikipedia's curators need to be translated into confidence thresholds for the prediction models.  For example, counter-vandalism patrollers seek to catch all (or almost all) vandalism before it stays in Wikipedia for very long.  That means they have an operational concern around the \emph{recall} of a damage prediction model.  They would also like to review as few edits as possible in order to catch that vandalism.  So they have an operational concern around the \emph{filter rate}---the proportion of edits that are not flagged for review by the model\cite{halfaker2016notes}.
 
 By finding the threshold of prediction likelihood that optimizes the filter-rate at a high level of recall, we can provide vandal-fighters with an effective trade-off for supporting their work.  We refer to these optimizations in ORES as \emph{threshold optimizations} and ORES provides information about these thresholds in a machine-readable format so that tools can automatically detect the relevant thresholds for their wiki/model context.
 
@@ -96,11 +96,11 @@ Originally, when we developed ORES, we defined these threshold optimizations in 
         \label{fig:english_damaging_threshold_optimization}
 \end{figure}
 
-This result shows that, when a threshold is set on 0.299 likelihood of damaging=true, then you can expect to get a recall of 0.751, precision of 0.215, and a filter-rate of 0.88.  While the precision is low, this threshold reduces the overall workload of vandal-fighters by 88\% while still catching 75\% of (the most egregious) damaging edits.
+This result shows that, when a threshold is set on 0.299 likelihood of damaging=true, a user can expect to get a recall of 0.751, precision of 0.215, and a filter-rate of 0.88.  While the precision is low, this threshold reduces the overall workload of vandal-fighters by 88\% while still catching 75\% of (the most egregious) damaging edits.
 
 \subsection{Explicit pipelines}
 \label{sec:appendix.explicit_pipelines}
-We have designed the process of training and deploying ORES prediction models is to be repeatable and reviewable.  Consider the following code that represents a common pattern from our model-building Makefiles:
+We have designed the process of training and deploying ORES prediction models to be repeatable and reviewable.  Consider the following code that represents a common pattern from our model-building Makefiles:
 \begin{figure*}[h]
         \makebox{\hrulefill}{
         \small
@@ -135,9 +135,9 @@ models/enwiki.damaging.gradient_boosting.model: \
         \label{fig:english_damaging_makefile}
 \end{figure*}
 
-Essentially, this code helps someone determine where the labeled data comes from (manually labeled via the Wiki Labels system).  It makes it clear how features are extracted (using the \texttt{revscoring extract} utility and the \texttt{feature\_lists.enwiki.damaging} feature set).  Finally, this dataset of extracted features is used to cross-validate and train a model predicting the ``damaging'' label and a serialized version of that model is written to a file.  A user could clone this repository, install the set of requirements, and run \texttt{make enwiki\_models} and expect that all of the data-pipeline would be reproduced, and an exactly equivalent model obtained.
+Essentially, this code helps someone determine where the labeled data comes from (manually labeled via the Wiki Labels system).  It makes it clear how features are extracted (using the \texttt{revscoring extract} utility and the \texttt{feature\_lists.enwiki.damaging} feature set).  Finally, this dataset of extracted features is used to cross-validate and train a model predicting the ``damaging'' label and a serialized version of that model is written to a file.  A user could clone this repository, install the set of requirements, and run \texttt{make enwiki\_models} and expect that all of the data-pipeline would be reproduced, and an equivalent model obtained.
 
-By explicitly using public resources and releasing our utilities and Makefile source code under an open license (MIT), we have essential implemented a turn-key process for replicating our model building and evaluation pipeline.  A developer can review this pipeline for issues knowing that they are not missing a step of the process because all steps are captured in the Makefile.  They can also build on the process (e.g. add new features) incrementally and restart the pipeline.  In our own experience, this explicit pipeline is extremely useful for identifying the origin of our own model building bugs and for making incremental improvements to ORES' models.
+By explicitly using public resources and releasing our utilities and Makefile source code under an open license (MIT), we have essentially implemented a turn-key process for replicating our model building and evaluation pipeline.  A developer can review this pipeline for issues knowing that they are not missing a step of the process because all steps are captured in the Makefile.  They can also build on the process (e.g. add new features) incrementally and restart the pipeline.  In our own experience, this explicit pipeline is extremely useful for identifying the origin of our own model building bugs and for making incremental improvements to ORES' models.
 
 At the very base of our Makefile, a user can run \texttt{make models} to rebuild all of the models of a certain type.  We regularly perform this process ourselves to ensure that the Makefile is an accurate representation of the data flow pipeline.  Performing complete rebuild is essential when a breaking change is made to one of our libraries.  The resulting serialized models are saved to the source code repository so that a developer can review the history of any specific model and even experiment with generating scores using old model versions.
 
